@@ -4,7 +4,7 @@
 
 var extend = require('xtend');
 var path = require('path');
-var spawn = require('child_process').spawn;
+var fork = require('child_process').fork;
 var karmaParseConfig = require('karma/lib/config').parseConfig;
 var Q = require('q');
 
@@ -71,10 +71,9 @@ var karmaHelper = function(options) {
     // A child process is used because server.start() refuses to die unless you do a process.exit()
     // Doing a process.exit() would muck with gulp, so we have to take other measures
     // See https://github.com/karma-runner/karma/issues/734 and https://github.com/karma-runner/karma/issues/1035
-    child = spawn(
-      'node',
+    child = fork(
+      background,
       [
-        background,
         JSON.stringify(newOptions)
       ],
       {
@@ -161,10 +160,9 @@ var karmaHelper = function(options) {
     var deferred = Q.defer(), oncePs;
     newOptions = extend(options, newOptions, {singleRun: true});
 
-    oncePs = spawn(
-      'node',
+    oncePs = fork(
+      background,
       [
-        background,
         JSON.stringify(newOptions)
       ],
       {
